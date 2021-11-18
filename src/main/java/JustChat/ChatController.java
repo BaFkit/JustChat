@@ -13,7 +13,7 @@ public class ChatController {
     @FXML
     protected void onButtonClick() {
         if(!mainTextField.getText().isEmpty()){
-            mainTextArea.appendText(mainTextField.getText().trim() + "\n");
+            mainTextArea.appendText("-" + mainTextField.getText().trim() + "\n");
             mainTextField.clear();
             }
         }

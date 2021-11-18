@@ -13,7 +13,7 @@
       <font>
          <Font name="System Bold" size="18.0" />
       </font></Label>
-    <TextArea fx:id="mainTextArea" editable="false" VBox.vgrow="ALWAYS">
+    <TextArea fx:id="mainTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS">
       <font>
          <Font name="Comic Sans MS Italic" size="14.0" />
       </font></TextArea>
