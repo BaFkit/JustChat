@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #dddddd;" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JustChat.ChatController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <Label style="-fx-font-family: Comic Sans MS;" text="Just Chat">
+      <font>
+         <Font name="System Bold" size="18.0" />
+      </font></Label>
+    <TextArea fx:id="mainTextArea" editable="false" VBox.vgrow="ALWAYS">
+      <font>
+         <Font name="Comic Sans MS Italic" size="14.0" />
+      </font></TextArea>
+    <HBox>
+        <TextField fx:id="mainTextField" maxWidth="Infinity" onAction="#onButtonClick" promptText="Введите сообщение..." HBox.hgrow="ALWAYS">
+         <HBox.margin>
+            <Insets right="5.0" />
+         </HBox.margin></TextField>
+        <Button onAction="#onButtonClick" prefWidth="106.0" text="Enter" />
+    </HBox>
+
+
+
+
+</VBox>
