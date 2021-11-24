@@ -22,7 +22,7 @@
          <HBox.margin>
             <Insets right="5.0" />
          </HBox.margin></TextField>
-        <Button onAction="#onButtonClick" prefWidth="106.0" text="Enter" />
+        <Button onAction="#onButtonClick" prefWidth="106.0" text="Enter"/>
     </HBox>
 
 
