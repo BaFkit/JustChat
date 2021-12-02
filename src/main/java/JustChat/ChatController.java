@@ -31,8 +31,4 @@ public class ChatController implements Initializable {
             mainTextField.requestFocus();
             }
     }
-
-
 }
-
-

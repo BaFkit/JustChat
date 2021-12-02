@@ -30,20 +30,25 @@ public class Client {
                     socket = new Socket(SERVER_ADDR, SERVER_PORT);
                     in = new DataInputStream(socket.getInputStream());
                     out = new DataOutputStream(socket.getOutputStream());
-                    new Thread(() -> {
-                        try{
-                            while (true){
-                                if (waitAuthorization()) break;
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                while (true){
+                                    if (waitAuthorization()) break;
+                                }
+                                while (true){
+                                    if (waitDisconnect()) break;
+                                }
+                            }catch (Exception e) {
+                                e.printStackTrace();
+                            }finally {
+                                closeConnection();
                             }
-                            while (true){
-                                if (waitDisconnect()) break;
-                            }
-                        }catch (Exception e) {
-                            e.printStackTrace();
-                        }finally {
-                            closeConnection();
                         }
-                    }).start();
+                    });
+                    t.setDaemon(true);
+                    t.start();
                 }
                 out.writeUTF(message);
             }catch (IOException e){
