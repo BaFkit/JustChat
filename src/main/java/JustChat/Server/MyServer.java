@@ -64,11 +64,22 @@ public class MyServer {
         }
     }
 
+    public synchronized void broadcastClientsList() {
+        StringBuilder sb = new StringBuilder("/clients");
+        for (ClientHandler a: clients) {
+            sb.append(a.getName() + " ");
+        }
+        broadcastMsg(sb.toString());
+    }
+
+
     public synchronized void subscribe(ClientHandler ch) {
         clients.add(ch);
+        broadcastClientsList();
     }
 
     public synchronized void unsubscribe(ClientHandler ch) {
         clients.remove(ch);
+        broadcastClientsList();
     }
 }
