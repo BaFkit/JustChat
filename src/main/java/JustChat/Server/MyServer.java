@@ -3,6 +3,7 @@ package JustChat.Server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +17,6 @@ public class MyServer {
         return authorizationService;
     }
 
-
-
     public MyServer() {
         try(ServerSocket server = new ServerSocket(PORT)) {
             authorizationService = new BaseAuthService();
@@ -29,7 +28,7 @@ public class MyServer {
                 System.out.println("Клиент подключился");
                 new ClientHandler(this, socket);
             }
-        }catch (IOException e) {
+        }catch (IOException | ClassNotFoundException | SQLException e) {
             System.out.println("Ошибка в работе сервера");
             e.printStackTrace();
         }finally {
@@ -67,7 +66,7 @@ public class MyServer {
     public synchronized void broadcastClientsList() {
         StringBuilder sb = new StringBuilder("/clients");
         for (ClientHandler a: clients) {
-            sb.append(a.getName() + " ");
+            sb.append(a.getName()).append(" ");
         }
         broadcastMsg(sb.toString());
     }
@@ -81,5 +80,19 @@ public class MyServer {
     public synchronized void unsubscribe(ClientHandler ch) {
         clients.remove(ch);
         broadcastClientsList();
+    }
+
+    public  synchronized void changeNick(String nickIn, String nickTo) throws SQLException {
+        for (ClientHandler a: clients) {
+            if (a.getName().equals(nickIn)){
+                a.setName(nickTo);
+                if(authorizationService.changeNickInBase(nickIn, nickTo)){
+                    a.sendMessages("Ник успешно изменен на: " + nickTo);
+                    broadcastMsg("Пользователь: " + nickIn + " изменил ник на - " + nickTo);
+                }else {
+                    a.sendMessages("Ник изменить не удалось");
+                }
+            }
+        }
     }
 }

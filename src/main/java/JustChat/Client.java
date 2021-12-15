@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class Client {
 
@@ -46,8 +45,7 @@ public class Client {
                                     if (waitDisconnect()) break;
                                 }
                             }catch (Exception e) {
-                                System.out.println("Session closed");
-                                e.printStackTrace();
+                                System.out.println(e + " - Session closed");
                             }finally {
                                 closeConnection();
                             }

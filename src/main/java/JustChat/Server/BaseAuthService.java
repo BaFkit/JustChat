@@ -1,25 +1,20 @@
 package JustChat.Server;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class BaseAuthService implements AuthorizationService {
 
-    private List<Entry> entries;
+    private final List<Entry> entries;
+    Connection connection;
+    PreparedStatement ps;
+    ResultSet rs;
 
-    public BaseAuthService() {
-        entries = new ArrayList<>();
-        entries.add(new Entry("login1", "pass1", "nick1"));
-        entries.add(new Entry("login2", "pass2", "nick2"));
-        entries.add(new Entry("login3", "pass3", "nick3"));
-        entries.add(new Entry("login4", "pass4", "nick4"));
+    public BaseAuthService(){
+    entries = new ArrayList<>();
     }
-
-
-
-
-
-
     @Override
     public String getNickByLoginPass(String login, String pass) {
         for (Entry a: entries){
@@ -30,27 +25,60 @@ public class BaseAuthService implements AuthorizationService {
         return null;
     }
     @Override
-    public void start() {
+    public void start() throws ClassNotFoundException {
+        Class.forName("org.sqlite.JDBC");
+        try {
+            connection = DriverManager.getConnection("jdbc:sqlite:users.db");
+            ps = connection.prepareStatement("SELECT * FROM users");
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                entries.add(new Entry(rs.getString("login"), rs.getString("pass"), rs.getString("nick")));
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("Сервис аутентификации запущен");
     }
     @Override
     public void stop() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         System.out.println("Сервис аутентификации остановлен");
     }
 
+    public boolean changeNickInBase(String nickIn, String nickTo) throws SQLException {
 
-
-
+        ps = connection.prepareStatement("UPDATE users SET nick = ? WHERE nick = ?");
+        ps.setString(1, nickTo);
+        ps.setString(2, nickIn);
+        int result;
+        result = ps.executeUpdate();
+        return result != 0;
+    }
 
     private class Entry {
-        private String login;
-        private String pass;
-        private String nick;
+        private final String login;
+        private final String pass;
+        private final String nick;
 
         public Entry(String login, String pass, String nick) {
             this.login = login;
             this.pass = pass;
             this.nick = nick;
+        }
+
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "login='" + login + '\'' +
+                    ", pass='" + pass + '\'' +
+                    ", nick='" + nick + '\'' +
+                    '}';
         }
     }
 }

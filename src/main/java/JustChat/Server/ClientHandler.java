@@ -4,17 +4,21 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class ClientHandler {
-    private MyServer myServer;
-    private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
+    private final MyServer myServer;
+    private final Socket socket;
+    private final DataInputStream in;
+    private final DataOutputStream out;
 
     private String name;
 
     public String getName(){
         return name;
+    }
+    public void setName(String name){
+        this.name = name;
     }
 
     public ClientHandler(MyServer myServer, Socket socket) {
@@ -63,26 +67,45 @@ public class ClientHandler {
       }
 
     public void readMessages() throws IOException {
+        try {
           while (true) {
               String strFromClient = in.readUTF();
               System.out.println("Log/ " + name + " написал: " + strFromClient);
-              if (strFromClient.equals("/end")) {
-                  return;
-              }
-              if (strFromClient.startsWith("/w")){
-                  String[] parts = strFromClient.split("\\s+");
-                  String whom = parts[1];
-                  String msg = strFromClient.substring(4 + whom.length());
-                  if(myServer.sendPrivateMsg(whom, "Личное сообщение от " + name + ": " + msg)){
-                      out.writeUTF("Личное сообщение для " + whom + ": " + msg);
-                  }else{
-                      out.writeUTF("Участник " + whom + " не в сети");
+              if(strFromClient.startsWith("/")) {
+                  if (strFromClient.equals("/end")) {
+                      return;
+                  }
+                  if (strFromClient.startsWith("/w")) {
+                      String[] parts = strFromClient.split("\\s+");
+                      String whom = parts[1];
+                      String msg = strFromClient.substring(4 + whom.length());
+                      if (myServer.sendPrivateMsg(whom, "Личное сообщение от " + name + ": " + msg)) {
+                          out.writeUTF("Личное сообщение для " + whom + ": " + msg);
+                      } else {
+                          out.writeUTF("Участник " + whom + " не в сети");
+                      }
+                  }
+                  if (strFromClient.startsWith("/change")){
+                      String[] parts = strFromClient.split("\\s+");
+                      if(parts.length < 2){
+                          sendMessages("Ник изменить не удалось");
+                      }else{
+                          String nick = parts[1];
+                          try {
+                              myServer.changeNick(name, nick);
+                          } catch (SQLException e) {
+                              e.printStackTrace();
+                          }
+                      }
                   }
               }else{
                   myServer.broadcastMsg(name + ": " + strFromClient);
               }
-          }
+            }
+          } catch (IOException e) {
+            System.out.println(e + " - Клиент: " + name + " отключился");
         }
+    }
 
     public void sendMessages(String msg){
           try{
