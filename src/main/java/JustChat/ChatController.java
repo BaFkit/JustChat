@@ -14,12 +14,20 @@ public class ChatController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         client = new Client((msg -> {
-            mainTextArea.appendText(msg);
+            if (msg.startsWith("/clients")){
+                String clients = msg.substring("/clients".length());
+                listTextArea.setText(clients.replace(' ', '\n'));
+
+            }else{
+               mainTextArea.appendText(msg);
+            }
         }));
     }
 
     @FXML
     TextArea mainTextArea;
+    @FXML
+    TextArea listTextArea;
     @FXML
     TextField mainTextField;
 

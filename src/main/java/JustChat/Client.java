@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class Client {
 
@@ -33,14 +34,19 @@ public class Client {
                     Thread t = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            try{
-                                while (true){
-                                    if (waitAuthorization()) break;
+                            try {
+                                socket.setSoTimeout(120000);
+                                while (true) {
+                                    if (waitAuthorization()) {
+                                        socket.setSoTimeout(0);
+                                        break;
+                                    }
                                 }
-                                while (true){
+                                while (true) {
                                     if (waitDisconnect()) break;
                                 }
                             }catch (Exception e) {
+                                System.out.println("Session closed");
                                 e.printStackTrace();
                             }finally {
                                 closeConnection();
@@ -70,7 +76,7 @@ public class Client {
 
     public boolean waitDisconnect() throws IOException {
         String strFromServer = in.readUTF();
-        if (strFromServer.equalsIgnoreCase("/end")) {
+        if (strFromServer.equals("/end")) {
             return true;
         }
         transferMsg(strFromServer + "\n");
@@ -83,10 +89,11 @@ public class Client {
 
     public void closeConnection() {
         transferMsg("Соединение с сервером закрыто \n");
+        transferMsg("/clients ");
         try {
             in.close();
             out.close();
-            socket.close();
+            socket = null;
         } catch (IOException e) {
             e.printStackTrace();
         }
