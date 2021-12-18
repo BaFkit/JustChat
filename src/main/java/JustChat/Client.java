@@ -1,8 +1,6 @@
 package JustChat;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class Client {
@@ -17,6 +15,7 @@ public class Client {
     private PrintIn printMsg;
 
     private String nick = "";
+    private String login = "";
 
 
     public Client (PrintIn printMsg){
@@ -25,6 +24,12 @@ public class Client {
 
 
     public void sendMessage(String message){
+            String logMessage = message.trim();
+            if (!logMessage.isEmpty()) {
+                if (!login.isEmpty()) {
+                    writeToLog(logMessage, login);
+                }
+            }
             try {
                 if(socket == null || socket.isClosed()) {
                     socket = new Socket(SERVER_ADDR, SERVER_PORT);
@@ -64,7 +69,11 @@ public class Client {
     public boolean waitAuthorization() throws IOException {
         String strFromServer = in.readUTF();
         if(strFromServer.startsWith("/authok")) {
-            nick = strFromServer.split("\\s+", 2)[1];
+            System.out.println(strFromServer);
+            String[] parts = strFromServer.split("\\s+");
+            nick = parts[1];
+            this.login = parts[2];
+            System.out.println(nick);
             transferMsg("Авторизация успешна \n" + "Welcome " + nick + "\n");
             return true;
         }
@@ -96,6 +105,16 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    private void writeToLog(String logMessage, String login){
+        try(FileWriter fw = new FileWriter("history_" + login + ".txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
+            out.println(logMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+      }
+   }
 }
 
 
