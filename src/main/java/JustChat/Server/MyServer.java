@@ -3,6 +3,7 @@ package JustChat.Server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +17,6 @@ public class MyServer {
         return authorizationService;
     }
 
-
-
     public MyServer() {
         try(ServerSocket server = new ServerSocket(PORT)) {
             authorizationService = new BaseAuthService();
@@ -29,7 +28,7 @@ public class MyServer {
                 System.out.println("Клиент подключился");
                 new ClientHandler(this, socket);
             }
-        }catch (IOException e) {
+        }catch (IOException | ClassNotFoundException | SQLException e) {
             System.out.println("Ошибка в работе сервера");
             e.printStackTrace();
         }finally {
@@ -67,7 +66,7 @@ public class MyServer {
     public synchronized void broadcastClientsList() {
         StringBuilder sb = new StringBuilder("/clients");
         for (ClientHandler a: clients) {
-            sb.append(a.getName() + " ");
+            sb.append(a.getName()).append(" ");
         }
         broadcastMsg(sb.toString());
     }
@@ -82,4 +81,5 @@ public class MyServer {
         clients.remove(ch);
         broadcastClientsList();
     }
+
 }
