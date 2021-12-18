@@ -82,17 +82,4 @@ public class MyServer {
         broadcastClientsList();
     }
 
-    public  synchronized void changeNick(String nickIn, String nickTo) throws SQLException {
-        for (ClientHandler a: clients) {
-            if (a.getName().equals(nickIn)){
-                a.setName(nickTo);
-                if(authorizationService.changeNickInBase(nickIn, nickTo)){
-                    a.sendMessages("Ник успешно изменен на: " + nickTo);
-                    broadcastMsg("Пользователь: " + nickIn + " изменил ник на - " + nickTo);
-                }else {
-                    a.sendMessages("Ник изменить не удалось");
-                }
-            }
-        }
-    }
 }

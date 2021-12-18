@@ -8,13 +8,52 @@ import java.util.List;
 public class BaseAuthService implements AuthorizationService {
 
     private final List<Entry> entries;
-    Connection connection;
-    PreparedStatement ps;
-    ResultSet rs;
+    private static Connection connection;
+    private static PreparedStatement ps;
 
     public BaseAuthService(){
-    entries = new ArrayList<>();
+        entries = new ArrayList<>();
     }
+
+    private Connection getConnection(){
+        try{
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
+    public void connect(){
+        try {
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:users.db");
+            ps = connection.prepareStatement("SELECT * FROM users");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                entries.add(new Entry(rs.getInt("id"), rs.getString("login"), rs.getString("pass"), rs.getString("nick")));
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void disconnect(){
+        try {
+            if (ps != null){
+                ps.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     @Override
     public String getNickByLoginPass(String login, String pass) {
         for (Entry a: entries){
@@ -24,61 +63,48 @@ public class BaseAuthService implements AuthorizationService {
         }
         return null;
     }
+
     @Override
-    public void start() throws ClassNotFoundException {
-        Class.forName("org.sqlite.JDBC");
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:users.db");
-            ps = connection.prepareStatement("SELECT * FROM users");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                entries.add(new Entry(rs.getString("login"), rs.getString("pass"), rs.getString("nick")));
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void start() {
+        connect();
         System.out.println("Сервис аутентификации запущен");
     }
     @Override
     public void stop() {
+        disconnect();
+        System.out.println("Сервис аутентификации остановлен");
+    }
+
+
+    public boolean changeNick(String nickIn, String nickTo) {
+        int result = 0;
         try {
-            if (connection != null) {
-                connection.close();
+            ps = connection.prepareStatement("UPDATE users SET nick = ? WHERE nick = ?");
+            ps.setString(1, nickTo);
+            ps.setString(2, nickIn);
+            result = ps.executeUpdate();
+            for (Entry entry: entries){
+                if(entry.nick.equals(nickIn)){
+                    entry.nick = nickTo;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Сервис аутентификации остановлен");
-    }
-
-    public boolean changeNickInBase(String nickIn, String nickTo) throws SQLException {
-
-        ps = connection.prepareStatement("UPDATE users SET nick = ? WHERE nick = ?");
-        ps.setString(1, nickTo);
-        ps.setString(2, nickIn);
-        int result;
-        result = ps.executeUpdate();
         return result != 0;
     }
 
-    private class Entry {
+    private static class  Entry {
+        private final int id;
         private final String login;
         private final String pass;
-        private final String nick;
+        private String nick;
 
-        public Entry(String login, String pass, String nick) {
+        public Entry(int id, String login, String pass, String nick) {
+            this.id = id;
             this.login = login;
             this.pass = pass;
             this.nick = nick;
-        }
-
-        @Override
-        public String toString() {
-            return "Entry{" +
-                    "login='" + login + '\'' +
-                    ", pass='" + pass + '\'' +
-                    ", nick='" + nick + '\'' +
-                    '}';
         }
     }
 }

@@ -87,14 +87,17 @@ public class ClientHandler {
                   }
                   if (strFromClient.startsWith("/change")){
                       String[] parts = strFromClient.split("\\s+");
-                      if(parts.length < 2){
+                      if(parts.length != 2){
                           sendMessages("Ник изменить не удалось");
                       }else{
                           String nick = parts[1];
-                          try {
-                              myServer.changeNick(name, nick);
-                          } catch (SQLException e) {
-                              e.printStackTrace();
+                          if(myServer.getAuthorizationService().changeNick(name, nick)){
+                              myServer.broadcastMsg("Пользователь: " + name + " изменил ник на - " + nick);
+                              this.name = nick;
+                              myServer.broadcastClientsList();
+                              sendMessages("Ник успешно изменен на: " + nick);
+                          } else {
+                              sendMessages("Ник изменить не удалось");
                           }
                       }
                   }
