@@ -1,9 +1,10 @@
 package JustChat;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class Client {
 
@@ -17,6 +18,7 @@ public class Client {
     private PrintIn printMsg;
 
     private String nick = "";
+    private String login = "";
 
 
     public Client (PrintIn printMsg){
@@ -25,47 +27,56 @@ public class Client {
 
 
     public void sendMessage(String message){
-            try {
-                if(socket == null || socket.isClosed()) {
-                    socket = new Socket(SERVER_ADDR, SERVER_PORT);
-                    in = new DataInputStream(socket.getInputStream());
-                    out = new DataOutputStream(socket.getOutputStream());
-                    Thread t = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                socket.setSoTimeout(120000);
-                                while (true) {
-                                    if (waitAuthorization()) {
-                                        socket.setSoTimeout(0);
-                                        break;
-                                    }
-                                }
-                                while (true) {
-                                    if (waitDisconnect()) break;
-                                }
-                            }catch (Exception e) {
-                                System.out.println(e + " - Session closed");
-                            }finally {
-                                closeConnection();
-                            }
-                        }
-                    });
-                    t.setDaemon(true);
-                    t.start();
-                }
-                out.writeUTF(message);
-            }catch (IOException e){
-                e.printStackTrace();
+        String logMessage = message.trim();
+        if (!logMessage.isEmpty()) {
+            if (!login.isEmpty() &&  !logMessage.startsWith("/")) {
+                writeToLog(logMessage, login);
             }
         }
+        try {
+            if(socket == null || socket.isClosed()) {
+                socket = new Socket(SERVER_ADDR, SERVER_PORT);
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            socket.setSoTimeout(120000);
+                            while (true) {
+                                if (waitAuthorization()) {
+                                    socket.setSoTimeout(0);
+                                    break;
+                                }
+                            }
+                            while (true) {
+                                if (waitDisconnect()) break;
+                            }
+                        }catch (Exception e) {
+                            System.out.println(e + " - Session closed");
+                        }finally {
+                            closeConnection();
+                        }
+                    }
+                });
+                t.setDaemon(true);
+                t.start();
+            }
+            out.writeUTF(message);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
 
     public boolean waitAuthorization() throws IOException {
         String strFromServer = in.readUTF();
         if(strFromServer.startsWith("/authok")) {
-            nick = strFromServer.split("\\s+", 2)[1];
+            String[] parts = strFromServer.split("\\s+");
+            nick = parts[1];
+            this.login = parts[2];
             transferMsg("Авторизация успешна \n" + "Welcome " + nick + "\n");
+//            loadHistory(login);
             return true;
         }
         transferMsg(strFromServer + "\n");
@@ -96,6 +107,37 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    private void writeToLog(String logMessage, String login){
+        try(FileWriter fw = new FileWriter("history_" + login + ".txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
+            out.println(logMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+//    private void loadHistory(String login){
+//        try{
+//            List <String> allLines = Files.readAllLines(Paths.get("history_" + login + ".txt"));
+//            int allLinesSize = allLines.size();
+//            if(allLinesSize <= 100) {
+//                for(String line: allLines) {
+//                    printMsg.printIn(line + "\n");
+//                    System.out.println(line);
+//                }
+//            } else {
+//                for (String line: allLines.subList(allLinesSize - 100, allLinesSize -1)) {
+//                    printMsg.printIn(line + "\n");
+//                    System.out.println(line);
+//                }
+//            }
+//        } catch (IOException e){
+//            e.printStackTrace();
+//        }
+//    }
 }
 
 

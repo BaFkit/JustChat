@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
 
 public class ClientHandler {
     private final MyServer myServer;
@@ -44,90 +43,90 @@ public class ClientHandler {
     }
 
     public void authentication() throws IOException {
-      while (true){
-        String str = in.readUTF();
-        if (str.startsWith("/auth")) {
-            String[] parts = str.split("\\s+");
-            String nick = myServer.getAuthorizationService().getNickByLoginPass(parts[1], parts[2]);
-            if (nick != null) {
-                if (!myServer.isNickBusy(nick)) {
-                    sendMessages("/authok " + nick);
-                    name = nick;
-                    myServer.broadcastMsg(name + " зашел в чат");
-                    myServer.subscribe(this);
-                    return;
+        while (true){
+            String str = in.readUTF();
+            if (str.startsWith("/auth")) {
+                String[] parts = str.split("\\s+");
+                String nick = myServer.getAuthorizationService().getNickByLoginPass(parts[1], parts[2]);
+                if (nick != null) {
+                    if (!myServer.isNickBusy(nick)) {
+                        sendMessages("/authok " + nick + " " + parts[1]);
+                        name = nick;
+                        myServer.broadcastMsg(name + " зашел в чат");
+                        myServer.subscribe(this);
+                        return;
+                    } else {
+                        sendMessages("Учетная запись уже используется");
+                    }
                 } else {
-                    sendMessages("Учетная запись уже используется");
+                    sendMessages("Неверный логин/пароль");
                 }
-            } else {
-                sendMessages("Неверный логин/пароль");
             }
-          }
         }
-      }
+    }
 
     public void readMessages() throws IOException {
         try {
-          while (true) {
-              String strFromClient = in.readUTF();
-              System.out.println("Log/ " + name + " написал: " + strFromClient);
-              if(strFromClient.startsWith("/")) {
-                  if (strFromClient.equals("/end")) {
-                      return;
-                  }
-                  if (strFromClient.startsWith("/w")) {
-                      String[] parts = strFromClient.split("\\s+");
-                      String whom = parts[1];
-                      String msg = strFromClient.substring(4 + whom.length());
-                      if (myServer.sendPrivateMsg(whom, "Личное сообщение от " + name + ": " + msg)) {
-                          out.writeUTF("Личное сообщение для " + whom + ": " + msg);
-                      } else {
-                          out.writeUTF("Участник " + whom + " не в сети");
-                      }
-                  }
-                  if (strFromClient.startsWith("/change")){
-                      String[] parts = strFromClient.split("\\s+");
-                      if(parts.length != 2){
-                          sendMessages("Ник изменить не удалось");
-                      }else{
-                          String nick = parts[1];
-                          if(myServer.getAuthorizationService().changeNick(name, nick)){
-                              myServer.broadcastMsg("Пользователь: " + name + " изменил ник на - " + nick);
-                              this.name = nick;
-                              myServer.broadcastClientsList();
-                              sendMessages("Ник успешно изменен на: " + nick);
-                          } else {
-                              sendMessages("Ник изменить не удалось");
-                          }
-                      }
-                  }
-              }else{
-                  myServer.broadcastMsg(name + ": " + strFromClient);
-              }
+            while (true) {
+                String strFromClient = in.readUTF();
+                System.out.println("Log/ " + name + " написал: " + strFromClient);
+                if(strFromClient.startsWith("/")) {
+                    if (strFromClient.equals("/end")) {
+                        return;
+                    }
+                    if (strFromClient.startsWith("/w")) {
+                        String[] parts = strFromClient.split("\\s+");
+                        String whom = parts[1];
+                        String msg = strFromClient.substring(4 + whom.length());
+                        if (myServer.sendPrivateMsg(whom, "Личное сообщение от " + name + ": " + msg)) {
+                            out.writeUTF("Личное сообщение для " + whom + ": " + msg);
+                        } else {
+                            out.writeUTF("Участник " + whom + " не в сети");
+                        }
+                    }
+                    if (strFromClient.startsWith("/change")){
+                        String[] parts = strFromClient.split("\\s+");
+                        if(parts.length != 2){
+                            sendMessages("Ник изменить не удалось");
+                        }else{
+                            String nick = parts[1];
+                            if(myServer.getAuthorizationService().changeNick(name, nick)){
+                                myServer.broadcastMsg("Пользователь: " + name + " изменил ник на - " + nick);
+                                this.name = nick;
+                                myServer.broadcastClientsList();
+                                sendMessages("Ник успешно изменен на: " + nick);
+                            } else {
+                                sendMessages("Ник изменить не удалось");
+                            }
+                        }
+                    }
+                }else{
+                    myServer.broadcastMsg(name + ": " + strFromClient);
+                }
             }
-          } catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e + " - Клиент: " + name + " отключился");
         }
     }
 
     public void sendMessages(String msg){
-          try{
+        try{
             out.writeUTF(msg);
-          }catch (IOException e){
+        }catch (IOException e){
             e.printStackTrace();
-          }
+        }
     }
 
     public void closeConnection() {
-          myServer.unsubscribe(this);
-          myServer.broadcastMsg(name + " вышел из чата");
-          try{
-              in.close();
-              out.close();
-              socket.close();
-          }catch (IOException e){
-              e.printStackTrace();
-          }
+        myServer.unsubscribe(this);
+        myServer.broadcastMsg(name + " вышел из чата");
+        try{
+            in.close();
+            out.close();
+            socket.close();
+        }catch (IOException e){
+            e.printStackTrace();
         }
-  }
+    }
+}
 
