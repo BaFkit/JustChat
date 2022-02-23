@@ -6,35 +6,37 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MyServer {
     private final int PORT = 8189;
 
+    private static final Logger log = LogManager.getLogger(MyServer.class);
     private List<ClientHandler> clients;
     private AuthorizationService authorizationService;
-
     public AuthorizationService getAuthorizationService() {
         return authorizationService;
     }
 
     public MyServer() {
         try(ServerSocket server = new ServerSocket(PORT)) {
+            log.info("Server started");
             authorizationService = new BaseAuthService();
             authorizationService.start();
             clients = new ArrayList<>();
             while (true) {
-                System.out.println("Сервер ожидает подключения");
                 Socket socket = server.accept();
-                System.out.println("Клиент подключился");
                 new ClientHandler(this, socket);
             }
         }catch (IOException | ClassNotFoundException | SQLException e) {
-            System.out.println("Ошибка в работе сервера");
+            log.fatal("Server error");
             e.printStackTrace();
         }finally {
             if(authorizationService != null) {
                 authorizationService.stop();
             }
+            log.info("Server stopped");
         }
     }
 
@@ -74,12 +76,15 @@ public class MyServer {
 
     public synchronized void subscribe(ClientHandler ch) {
         clients.add(ch);
+        log.info("{}{}{}", "Client ", ch.getName(), " connected");
         broadcastClientsList();
     }
 
     public synchronized void unsubscribe(ClientHandler ch) {
         clients.remove(ch);
+        log.info("{}{}{}", "Client ", ch.getName(), " disconnected");
         broadcastClientsList();
     }
 
 }
+

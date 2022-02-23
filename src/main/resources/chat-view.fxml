@@ -9,62 +9,63 @@
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-   <HBox alignment="TOP_CENTER" maxHeight="-Infinity" prefHeight="41.0" prefWidth="380.0" VBox.vgrow="ALWAYS">
-      <children>
-          <Label prefHeight="46.0" prefWidth="111.0" style="-fx-font-family: Comic Sans MS;" text="Just Chat" HBox.hgrow="ALWAYS">
-            <font>
-               <Font name="System Bold" size="18.0" />
-            </font>
-            <padding>
-               <Insets left="5.0" />
-            </padding>
-         </Label>
-      </children>
-   </HBox>
-   <Separator prefWidth="200.0" />
-   <HBox prefHeight="465.0" prefWidth="380.0" VBox.vgrow="ALWAYS">
-      <children>
-         <VBox prefHeight="430.0" prefWidth="280.0" HBox.hgrow="ALWAYS">
-            <children>
-                <TextArea fx:id="mainTextArea" editable="false" prefHeight="421.0" prefWidth="280.0" wrapText="true" VBox.vgrow="ALWAYS">
-                  <font>
-                     <Font name="Comic Sans MS Italic" size="14.0" />
-                  </font>
-                  <opaqueInsets>
-                     <Insets />
-                  </opaqueInsets>
-                  <VBox.margin>
-                     <Insets bottom="2.0" />
-                  </VBox.margin>
-               </TextArea>
-                <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" VBox.vgrow="ALWAYS">
-                    <TextField fx:id="mainTextField" maxWidth="Infinity" onAction="#onButtonClick" promptText="Введите сообщение..." HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets right="5.0" />
-                     </HBox.margin>
-                  </TextField>
-                    <Button onAction="#onButtonClick" prefWidth="106.0" text="Enter" HBox.hgrow="ALWAYS" />
-                </HBox>
-            </children>
-         </VBox>
-         <VBox alignment="TOP_CENTER" prefHeight="430.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-            <children>
-               <Label alignment="CENTER" contentDisplay="TOP" prefHeight="31.0" text="Client List:" textAlignment="CENTER" VBox.vgrow="ALWAYS">
-                  <VBox.margin>
-                     <Insets />
-                  </VBox.margin>
-                  <font>
-                     <Font name="System Bold Italic" size="14.0" />
-                  </font>
-               </Label>
-               <TextArea fx:id="listTextArea" editable="false" prefHeight="397.0" prefWidth="99.0" wrapText="true" VBox.vgrow="ALWAYS">
-                  <font>
-                     <Font name="Comic Sans MS Italic" size="14.0" />
-                  </font></TextArea>
-            </children>
-            <HBox.margin>
-               <Insets left="2.0" />
-            </HBox.margin></VBox>
-      </children>
-   </HBox>
+    <HBox alignment="TOP_CENTER" maxHeight="-Infinity" prefHeight="41.0" prefWidth="380.0" VBox.vgrow="ALWAYS">
+        <children>
+            <Label prefHeight="46.0" prefWidth="111.0" style="-fx-font-family: Comic Sans MS;" text="Just Chat" HBox.hgrow="ALWAYS">
+                <font>
+                    <Font name="System Bold" size="18.0" />
+                </font>
+                <padding>
+                    <Insets left="5.0" />
+                </padding>
+            </Label>
+        </children>
+    </HBox>
+    <Separator prefWidth="200.0" />
+    <HBox prefHeight="465.0" prefWidth="380.0" VBox.vgrow="ALWAYS">
+        <children>
+            <VBox prefHeight="430.0" prefWidth="280.0" HBox.hgrow="ALWAYS">
+                <children>
+                    <TextArea fx:id="mainTextArea" editable="false" prefHeight="421.0" prefWidth="280.0" wrapText="true" VBox.vgrow="ALWAYS">
+                        <font>
+                            <Font name="Comic Sans MS Italic" size="14.0" />
+                        </font>
+                        <opaqueInsets>
+                            <Insets />
+                        </opaqueInsets>
+                        <VBox.margin>
+                            <Insets bottom="2.0" />
+                        </VBox.margin>
+                    </TextArea>
+                    <HBox alignment="BOTTOM_LEFT" maxHeight="-Infinity" VBox.vgrow="ALWAYS">
+                        <TextField fx:id="mainTextField" maxWidth="Infinity" onAction="#onButtonClick" promptText="Введите сообщение..." HBox.hgrow="ALWAYS">
+                            <HBox.margin>
+                                <Insets right="5.0" />
+                            </HBox.margin>
+                        </TextField>
+                        <Button onAction="#onButtonClick" prefWidth="106.0" text="Enter" HBox.hgrow="ALWAYS" />
+                    </HBox>
+                </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefHeight="430.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                <children>
+                    <Label alignment="CENTER" contentDisplay="TOP" prefHeight="31.0" text="Client List:" textAlignment="CENTER" VBox.vgrow="ALWAYS">
+                        <VBox.margin>
+                            <Insets />
+                        </VBox.margin>
+                        <font>
+                            <Font name="System Bold Italic" size="14.0" />
+                        </font>
+                    </Label>
+                    <TextArea fx:id="listTextArea" editable="false" prefHeight="397.0" prefWidth="99.0" wrapText="true" VBox.vgrow="ALWAYS">
+                        <font>
+                            <Font name="Comic Sans MS Italic" size="14.0" />
+                        </font></TextArea>
+                </children>
+                <HBox.margin>
+                    <Insets left="2.0" />
+                </HBox.margin></VBox>
+        </children>
+    </HBox>
 </VBox>
+

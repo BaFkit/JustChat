@@ -7,6 +7,7 @@ module com.example.chat {
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
     requires sqlite.jdbc;
+    requires org.apache.logging.log4j;
 
     opens JustChat to javafx.fxml;
     exports JustChat;

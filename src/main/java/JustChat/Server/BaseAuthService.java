@@ -1,11 +1,16 @@
 package JustChat.Server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class BaseAuthService implements AuthorizationService {
+
+    private static final Logger log = LogManager.getLogger(BaseAuthService.class);
 
     private final List<Entry> entries;
     private static Connection connection;
@@ -53,7 +58,6 @@ public class BaseAuthService implements AuthorizationService {
     }
 
 
-
     @Override
     public String getNickByLoginPass(String login, String pass) {
         for (Entry a: entries){
@@ -67,12 +71,12 @@ public class BaseAuthService implements AuthorizationService {
     @Override
     public void start() {
         connect();
-        System.out.println("Сервис аутентификации запущен");
+        log.info("Authentication service started");
     }
     @Override
     public void stop() {
         disconnect();
-        System.out.println("Сервис аутентификации остановлен");
+        log.info("Authentication service stopped");
     }
 
 
@@ -108,5 +112,3 @@ public class BaseAuthService implements AuthorizationService {
         }
     }
 }
-
-

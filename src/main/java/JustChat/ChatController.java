@@ -1,5 +1,6 @@
 package JustChat;
 
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -19,7 +20,7 @@ public class ChatController implements Initializable {
                 listTextArea.setText(clients.replace(' ', '\n'));
 
             }else{
-               mainTextArea.appendText(msg);
+                mainTextArea.appendText(msg);
             }
         }));
     }
@@ -37,6 +38,6 @@ public class ChatController implements Initializable {
             client.sendMessage(mainTextField.getText().trim());
             mainTextField.clear();
             mainTextField.requestFocus();
-            }
+        }
     }
 }

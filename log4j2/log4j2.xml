@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Configuration>
+    <Properties>
+        <Property name="basePath">logs</Property>
+    </Properties>
+
+    <Appenders>
+        <File name="FILE" fileName="${basePath}/logfile.log" append="true">
+            <PatternLayout pattern="%-5p %d{yyyy-MM-dd HH:mm:ss} [%t] %C (%F:%L) - %m%n" />
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="MyServer" level="debug" />
+        <Root level="info">
+            <AppenderRef ref="FILE" />
+        </Root>
+    </Loggers>
+</Configuration>
+
