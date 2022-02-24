@@ -40,14 +40,6 @@ public class ClientHandler {
             this.name = "";
             clientPool.execute(() -> {
                 try {
-                    FileOutputStream fileOutputStream = new FileOutputStream(path + "test.jpg");
-                    in.transferTo(fileOutputStream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            clientPool.execute(() -> {
-                try {
                     authentication();
                     readMessages();
                 } catch (IOException e) {
@@ -103,6 +95,10 @@ public class ClientHandler {
                         } else {
                             out.writeUTF("Участник " + whom + " не в сети");
                         }
+                    }
+                    if (strFromClient.startsWith("/sf")){
+                        FileOutputStream fileOutputStream = new FileOutputStream(path + "test.jpg");
+                        in.transferTo(fileOutputStream);
                     }
                     if (strFromClient.startsWith("/change")){
                         String[] parts = strFromClient.split("\\s+");

@@ -138,22 +138,17 @@ public class Client {
     }
 
     public void sendFile(String path) {
-        Thread sf = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try (FileInputStream inputStream = new FileInputStream(path)){
-                    if(socket != null) {
-                        byte[] buffer = new byte[4096];
+            try (FileInputStream inputStream = new FileInputStream(path)){
+                if(socket != null) {
+                    byte[] buffer = new byte[1024];
+                    DataOutputStream outf = new DataOutputStream(socket.getOutputStream());
                         while (inputStream.read(buffer) > 0) {
-                            out.write(buffer);
+                            outf.write(buffer);
                         }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-        sf.start();
     }
 }
 
