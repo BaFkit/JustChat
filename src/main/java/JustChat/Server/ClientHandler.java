@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -18,6 +19,7 @@ public class ClientHandler {
     private final DataOutputStream out;
 
     private String name;
+    private final String path = "C:\\Users\\Admin\\IdeaProjects\\JustChat\\";
 
     public String getName(){
         return name;
@@ -36,7 +38,14 @@ public class ClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.name = "";
-
+            clientPool.execute(() -> {
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(path + "test.jpg");
+                    in.transferTo(fileOutputStream);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
             clientPool.execute(() -> {
                 try {
                     authentication();

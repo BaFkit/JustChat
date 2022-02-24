@@ -136,6 +136,25 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    public void sendFile(String path) {
+        Thread sf = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try (FileInputStream inputStream = new FileInputStream(path)){
+                    if(socket != null) {
+                        byte[] buffer = new byte[4096];
+                        while (inputStream.read(buffer) > 0) {
+                            out.write(buffer);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        sf.start();
+    }
 }
 
 
