@@ -141,6 +141,8 @@ public class ClientHandler {
             in.close();
             out.close();
             socket.close();
+            socket2.close();
+            inputStreamForFiles.close();
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -148,7 +150,7 @@ public class ClientHandler {
 
     private void getFile() {
         try (socket2) {
-            FileOutputStream fileOutputStream = new FileOutputStream(puthStorage + "file.jpg");
+            FileOutputStream fileOutputStream = new FileOutputStream(puthStorage + name + "_file.jpg");
             inputStreamForFiles.transferTo(fileOutputStream);
         } catch (IOException e) {
             e.printStackTrace();
