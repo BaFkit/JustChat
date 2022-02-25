@@ -19,7 +19,6 @@ public class MyServer {
     public AuthorizationService getAuthorizationService() {
         return authorizationService;
     }
-
     public MyServer() {
         try(ServerSocket server = new ServerSocket(PORT); ServerSocket server2 = new ServerSocket(PORT2)) {
             log.info("Server started");

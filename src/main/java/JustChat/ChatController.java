@@ -43,6 +43,6 @@ public class ChatController implements Initializable {
     @FXML
     protected void send_file() {
         client.sendMessage("/sf");
-        client.sendFile("E:\\wtest.jpg");
+        client.sendFile();
     }
 }

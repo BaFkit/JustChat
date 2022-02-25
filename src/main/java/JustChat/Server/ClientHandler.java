@@ -15,9 +15,10 @@ public class ClientHandler {
     private final Socket socket2;
     private final DataInputStream in;
     private final DataOutputStream out;
+    private final InputStream inputStreamForFiles;
+    private final String puthStorage = "C:\\Users\\Admin\\IdeaProjects\\JustChat\\src\\main\\java\\JustChat\\Server\\Files\\";
 
     private String name;
-    private final String path = "C:\\Users\\Admin\\IdeaProjects\\JustChat\\";
 
     public String getName(){
         return name;
@@ -36,6 +37,7 @@ public class ClientHandler {
             this.socket2 = socket2;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            this.inputStreamForFiles = socket2.getInputStream();
             this.name = "";
             clientPool.execute(() -> {
                 try {
@@ -113,7 +115,7 @@ public class ClientHandler {
                     }
                     if (strFromClient.startsWith("/sf")){
                         getFile();
-                        System.out.println("фаил приняли");
+                        sendMessages("Фаил передан на сервер");
                     }
                 }else{
                     myServer.broadcastMsg(name + ": " + strFromClient);
@@ -145,9 +147,9 @@ public class ClientHandler {
     }
 
     private void getFile() {
-        try (socket2; InputStream inputStream = socket2.getInputStream()) {
-            FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\Admin\\IdeaProjects\\JustChat\\src\\main\\java\\JustChat\\Server\\Files\\file.jpg");
-            inputStream.transferTo(fileOutputStream);
+        try (socket2) {
+            FileOutputStream fileOutputStream = new FileOutputStream(puthStorage + "file.jpg");
+            inputStreamForFiles.transferTo(fileOutputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
