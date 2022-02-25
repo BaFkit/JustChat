@@ -138,17 +138,22 @@ public class Client {
     }
 
     public void sendFile(String path) {
-            try (FileInputStream inputStream = new FileInputStream(path)){
-                if(socket != null) {
-                    byte[] buffer = new byte[1024];
-                    DataOutputStream outf = new DataOutputStream(socket.getOutputStream());
-                        while (inputStream.read(buffer) > 0) {
-                            outf.write(buffer);
-                        }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        Socket clientSocket = null;
+        try {
+            clientSocket = new Socket("localhost", 8190);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File file = new File("C:\\Users\\Admin\\IdeaProjects\\JustChat\\src\\main\\java\\JustChat\\ClientFiles\\file.jpg");
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            assert clientSocket != null;
+            try (OutputStream outputStream = clientSocket.getOutputStream()) {
+                 fileInputStream.transferTo(outputStream);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 
