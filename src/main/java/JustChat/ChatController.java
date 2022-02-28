@@ -40,4 +40,9 @@ public class ChatController implements Initializable {
             mainTextField.requestFocus();
         }
     }
+    @FXML
+    protected void send_file() {
+        client.sendMessage("/sf");
+        client.sendFile();
+    }
 }

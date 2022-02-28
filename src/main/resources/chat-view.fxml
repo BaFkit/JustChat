@@ -67,5 +67,9 @@
                 </HBox.margin></VBox>
         </children>
     </HBox>
+   <HBox prefHeight="100.0" prefWidth="200.0">
+      <children>
+         <Button mnemonicParsing="false" onAction="#send_file" text="SendFile" />
+      </children>
+   </HBox>
 </VBox>
-

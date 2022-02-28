@@ -3,9 +3,7 @@ package JustChat.Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,8 +12,11 @@ public class ClientHandler {
 
     private final MyServer myServer;
     private final Socket socket;
+    private final Socket socket2;
     private final DataInputStream in;
     private final DataOutputStream out;
+    private final InputStream inputStreamForFiles;
+    private final String puthStorage = "C:\\Users\\Admin\\IdeaProjects\\JustChat\\src\\main\\java\\JustChat\\Server\\Files\\";
 
     private String name;
 
@@ -29,14 +30,15 @@ public class ClientHandler {
     public static ExecutorService clientPool = Executors.newCachedThreadPool();
     private static final Logger log = LogManager.getLogger(ClientHandler.class);
 
-    public ClientHandler(MyServer myServer, Socket socket) {
+    public ClientHandler(MyServer myServer, Socket socket, Socket socket2) {
         try {
             this.myServer = myServer;
             this.socket = socket;
+            this.socket2 = socket2;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            this.inputStreamForFiles = socket2.getInputStream();
             this.name = "";
-
             clientPool.execute(() -> {
                 try {
                     authentication();
@@ -111,6 +113,10 @@ public class ClientHandler {
                             }
                         }
                     }
+                    if (strFromClient.startsWith("/sf")){
+                        getFile();
+                        sendMessages("Фаил передан на сервер");
+                    }
                 }else{
                     myServer.broadcastMsg(name + ": " + strFromClient);
                 }
@@ -135,7 +141,18 @@ public class ClientHandler {
             in.close();
             out.close();
             socket.close();
+            socket2.close();
+            inputStreamForFiles.close();
         }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void getFile() {
+        try (socket2) {
+            FileOutputStream fileOutputStream = new FileOutputStream(puthStorage + name + "_file.jpg");
+            inputStreamForFiles.transferTo(fileOutputStream);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

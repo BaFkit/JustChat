@@ -10,8 +10,11 @@ public class Client {
 
     private final String SERVER_ADDR = "localhost";
     private final int SERVER_PORT = 8189;
+    private final int SERVER_PORT2 = 8190;
+
 
     private Socket socket;
+    private Socket socket2;
     private DataInputStream in;
     private DataOutputStream out;
 
@@ -36,6 +39,7 @@ public class Client {
         try {
             if(socket == null || socket.isClosed()) {
                 socket = new Socket(SERVER_ADDR, SERVER_PORT);
+                socket2 = new Socket(SERVER_ADDR, SERVER_PORT2);
                 in = new DataInputStream(socket.getInputStream());
                 out = new DataOutputStream(socket.getOutputStream());
                 Thread t = new Thread(new Runnable() {
@@ -133,6 +137,18 @@ public class Client {
                 }
             }
         } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendFile() {
+        File file = new File("C:\\Users\\Admin\\IdeaProjects\\JustChat\\src\\main\\java\\JustChat\\ClientFiles\\file.jpg");
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            assert socket2 != null;
+            try (OutputStream outputStream = socket2.getOutputStream()) {
+                 fileInputStream.transferTo(outputStream);
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MyServer {
     private final int PORT = 8189;
+    private final int PORT2 = 8190;
 
     private static final Logger log = LogManager.getLogger(MyServer.class);
     private List<ClientHandler> clients;
@@ -18,16 +19,16 @@ public class MyServer {
     public AuthorizationService getAuthorizationService() {
         return authorizationService;
     }
-
     public MyServer() {
-        try(ServerSocket server = new ServerSocket(PORT)) {
+        try(ServerSocket server = new ServerSocket(PORT); ServerSocket server2 = new ServerSocket(PORT2)) {
             log.info("Server started");
             authorizationService = new BaseAuthService();
             authorizationService.start();
             clients = new ArrayList<>();
             while (true) {
                 Socket socket = server.accept();
-                new ClientHandler(this, socket);
+                Socket socket2 = server2.accept();
+                new ClientHandler(this, socket, socket2);
             }
         }catch (IOException | ClassNotFoundException | SQLException e) {
             log.fatal("Server error");
